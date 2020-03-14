@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
         if (error) return callback(error);
 
         // broadcast message in room
-        socket.broadcast.to(user.room).emit('message', { user: `${user.name}`, text: message});
+        io.to(user.room).emit('message', { user: `${user.name}`, text: message});
         callback();
     });
 
