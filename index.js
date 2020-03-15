@@ -11,7 +11,7 @@ const express = require('express');
 const socketio = require('socket.io');
 
 const { PORT } = require('./utils/config');
-const { addUser, getUser } = require('./utils/users');
+const { addUser, getUser, deleteUser } = require('./utils/users');
 
 // Initialize express
 const app = express();
@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
         if (error) return callback(error);
 
         // Send message to user by admin
-        socket.emit('message', { user: 'admin', text: `${user.name}, welcome to the room ${user.room}` });
+        socket.emit('message', { user: 'admin', text: `${user.name}, welcome to ${user.room}` });
 
         // Broadcast acknowledge message to other users of room
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name}, has joined!` });
@@ -51,7 +51,12 @@ io.on('connection', (socket) => {
 
     // Add event on disconnection
     socket.on('disconnect', () => {
-        console.log('Use left chat');
+        const user = deleteUser(socket.id);
+        if (user) {
+            console.log(`${user['name']} left room`);
+
+            io.to(user['room']).emit('message', { user: 'admin', text: `${user.name}, left ${user.room}` });
+        }
     });
 });
 
