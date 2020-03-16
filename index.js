@@ -9,6 +9,7 @@
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const cors = require('cors');
 
 const { PORT } = require('./utils/config');
 const { addUser, getUser, deleteUser } = require('./utils/users');
@@ -17,6 +18,8 @@ const { addUser, getUser, deleteUser } = require('./utils/users');
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+
+app.use(cors());
 
 // create a on connect io listener
 io.on('connection', (socket) => {
